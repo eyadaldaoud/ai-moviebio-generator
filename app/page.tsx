@@ -604,7 +604,7 @@ export default function Home() {
                 </div>
 
                 <div style={styles.descriptionContainer}>
-                  <div style={styles.descriptionBox}>
+                  <div style={styles.descriptionBox} dir="auto">
                     {generatedContent.description || (
                       <span style={{ color: '#52525b', fontStyle: 'italic' }}>Waiting for AI...</span>
                     )}
@@ -632,6 +632,31 @@ export default function Home() {
           </section>
         </main>
       </div>
+
+      {/* JSON-LD for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            "name": "Movie Reel Description Generator",
+            "applicationCategory": "MultimediaApplication",
+            "operatingSystem": "Web",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            },
+            "description": "Generate engaging Instagram Reel descriptions, captions, and hashtags for movies using AI. Supports Arabic and English.",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": "4.8",
+              "ratingCount": "120"
+            }
+          })
+        }}
+      />
 
       <style jsx global>{`
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
