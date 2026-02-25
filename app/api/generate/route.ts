@@ -26,10 +26,10 @@ Requirements:
    - Starts with the Movie Title (Year) 🍿 on the first line.
    - First paragraph: Set the scene and the hook. Describe the plot premise in an exciting way without major spoilers. Use dramatic, storytelling language.
    - Second paragraph: Focus on the atmosphere, tension, or emotional impact. Why is this a must-watch? Use phrases that build hype (e.g., "Every scene builds tension...", "A masterpiece of...").
-   - Use emojis naturally within the text to break up lines.
+   - Use emojis GENEROUSLY (at least 2-3 per sentence) within the text to break up lines and add visual flavor. Use relevant movie, emotion, and aesthetic emojis.
    - Tone: ${selectedTone}. Avoid generic AI-sounding reviews.
 
-2. HASHTAGS: Provide 5 highly relevant hashtags and 3 general hashtags.
+2. HASHTAGS: Provide exactly 4 hashtags. Two hashtags must be #fyp and #اكسبلور. The other two hashtags must be highly relevant to the movie type/genre and context.
 
 IMPORTANT FORMATTING:
 - First, output the Description.

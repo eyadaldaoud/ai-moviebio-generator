@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@openrouter/sdk": "^0.8.0",
+    "@vercel/analytics": "^1.6.1",
     "ai": "^6.0.86",
     "next": "16.1.6",
     "openai": "^6.21.0",

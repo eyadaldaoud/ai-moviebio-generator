@@ -4,10 +4,15 @@ import { useState, CSSProperties, useRef, useEffect } from 'react';
 
 type DescLang = 'en' | 'ar';
 type Tone = 'enthusiastic' | 'dramatic' | 'funny' | 'professional' | 'minimalist';
+type Tab = 'bio' | 'image';
 
 interface GeneratedContent {
   description: string;
   hashtags: string[];
+}
+
+interface GeneratedImage {
+  imageUrl: string;
 }
 
 // ─── Styles ─────────────────────────────────────────────────
@@ -88,6 +93,33 @@ const styles: Record<string, CSSProperties> = {
     margin: '0 auto',
     lineHeight: 1.6,
   },
+  // Tab Navigation
+  tabsContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    gap: '12px',
+    marginBottom: '10px',
+  },
+  tabBtn: {
+    padding: '12px 24px',
+    borderRadius: '12px',
+    border: '1px solid rgba(255, 255, 255, 0.05)',
+    background: 'rgba(24, 24, 27, 0.4)',
+    color: '#71717a',
+    fontSize: '15px',
+    fontWeight: 600,
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+  },
+  tabBtnActive: {
+    background: 'rgba(124, 58, 237, 0.1)',
+    border: '1px solid rgba(124, 58, 237, 0.3)',
+    color: '#fff',
+    boxShadow: '0 0 20px rgba(124, 58, 237, 0.1)',
+  },
   mainGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
@@ -146,6 +178,21 @@ const styles: Record<string, CSSProperties> = {
     outline: 'none',
     transition: 'all 0.2s ease',
     fontFamily: 'inherit',
+  },
+  textarea: {
+    width: '100%',
+    padding: '16px',
+    borderRadius: '16px',
+    background: 'rgba(9, 9, 11, 0.5)',
+    border: '2px solid rgba(255, 255, 255, 0.05)',
+    color: '#fff',
+    fontSize: '16px',
+    fontWeight: 500,
+    outline: 'none',
+    transition: 'all 0.2s ease',
+    fontFamily: 'inherit',
+    minHeight: '120px',
+    resize: 'vertical',
   },
   // Tone Selector
   toneGrid: {
@@ -346,6 +393,22 @@ const styles: Record<string, CSSProperties> = {
     cursor: 'pointer',
     boxShadow: '0 2px 8px rgba(192, 132, 252, 0.05)',
   },
+  imageContainer: {
+    width: '100%',
+    borderRadius: '16px',
+    overflow: 'hidden',
+    border: '1px solid rgba(255, 255, 255, 0.05)',
+    background: 'rgba(0,0,0,0.2)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    aspectRatio: '1/1',
+  },
+  generatedImage: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+  },
   actions: {
     display: 'grid',
     gridTemplateColumns: 'minmax(200px, 1fr) auto',
@@ -387,10 +450,16 @@ const styles: Record<string, CSSProperties> = {
 
 // ─── Component ──────────────────────────────────────────────
 export default function Home() {
+  const [activeTab, setActiveTab] = useState<Tab>('bio');
   const [movieName, setMovieName] = useState('');
   const [descLang, setDescLang] = useState<DescLang>('en');
   const [tone, setTone] = useState<Tone>('enthusiastic');
   const [generatedContent, setGeneratedContent] = useState<GeneratedContent | null>(null);
+
+  const [imagePrompt, setImagePrompt] = useState('');
+  const [generatedImage, setGeneratedImage] = useState<GeneratedImage | null>(null);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+
   const [isGenerating, setIsGenerating] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState('');
@@ -463,6 +532,39 @@ export default function Home() {
     }
   };
 
+  const generateImage = async () => {
+    if (!imagePrompt.trim()) return;
+
+    setIsGeneratingImage(true);
+    setError('');
+    setGeneratedImage(null);
+
+    try {
+      const response = await fetch('/api/generate-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt: imagePrompt.trim(),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to generate image');
+      }
+
+      setGeneratedImage({ imageUrl: data.imageUrl });
+    } catch (err: any) {
+      setError(err.message || 'Failed to generate image. Please try again.');
+      console.error(err);
+    } finally {
+      setIsGeneratingImage(false);
+    }
+  };
+
   const copyToClipboard = () => {
     if (!generatedContent) return;
     const fullText = `${generatedContent.description}\n\n${generatedContent.hashtags.join(' ')}`;
@@ -471,9 +573,19 @@ export default function Home() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const downloadImage = async () => {
+    if (!generatedImage) return;
+    const link = document.createElement('a');
+    link.href = generatedImage.imageUrl;
+    link.download = `generated-image-${Date.now()}.png`;
+    link.click();
+  };
+
   const resetForm = () => {
     setMovieName('');
     setGeneratedContent(null);
+    setImagePrompt('');
+    setGeneratedImage(null);
     setCopied(false);
     setError('');
     if (abortControllerRef.current) {
@@ -487,7 +599,7 @@ export default function Home() {
 
       <div style={styles.container}>
         {/* Header */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', marginBottom: '40px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', marginBottom: '20px' }}>
           <header style={styles.header}>
             <div style={styles.logo}>
               <span style={styles.logoIcon}>✨</span>
@@ -495,139 +607,244 @@ export default function Home() {
             </div>
             <h1 style={styles.title}>Movie Reel Magic</h1>
             <p style={styles.subtitle}>
-              Create viral-worthy Instagram captions for your favorite films in seconds using advanced AI.
+              Create viral-worthy captions and stunning AI visuals for your favorite films.
             </p>
           </header>
+        </div>
+
+        {/* Tab Switcher */}
+        <div style={styles.tabsContainer}>
+          <button
+            onClick={() => setActiveTab('bio')}
+            style={{ ...styles.tabBtn, ...(activeTab === 'bio' ? styles.tabBtnActive : {}) }}
+          >
+            🎬 Movie Bio
+          </button>
+          <button
+            onClick={() => setActiveTab('image')}
+            style={{ ...styles.tabBtn, ...(activeTab === 'image' ? styles.tabBtnActive : {}) }}
+          >
+            🖼️ Image Gen
+          </button>
         </div>
 
         <main style={styles.mainGrid}>
           {/* LEFT: Controls */}
           <section style={styles.formCard}>
-            {/* Movie Input */}
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Movie Name</label>
-              <div style={styles.inputWrapper}>
-                <span style={styles.inputIcon}>🎬</span>
-                <input
-                  type="text"
-                  value={movieName}
-                  onChange={(e) => setMovieName(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && generateDescription()}
-                  placeholder="e.g. Interstellar"
-                  style={styles.input}
-                  disabled={isGenerating}
-                />
-              </div>
-            </div>
+            {activeTab === 'bio' ? (
+              <>
+                {/* Movie Input */}
+                <div style={styles.inputGroup}>
+                  <label style={styles.label}>Movie Name</label>
+                  <div style={styles.inputWrapper}>
+                    <span style={styles.inputIcon}>🎬</span>
+                    <input
+                      type="text"
+                      value={movieName}
+                      onChange={(e) => setMovieName(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && generateDescription()}
+                      placeholder="e.g. Interstellar"
+                      style={styles.input}
+                      disabled={isGenerating}
+                    />
+                  </div>
+                </div>
 
-            {/* Language */}
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Language</label>
-              <div style={styles.langGrid}>
+                {/* Language */}
+                <div style={styles.inputGroup}>
+                  <label style={styles.label}>Language</label>
+                  <div style={styles.langGrid}>
+                    <button
+                      type="button"
+                      onClick={() => setDescLang('en')}
+                      style={{ ...styles.langBtn, ...(descLang === 'en' ? styles.langBtnActive : {}) }}
+                    >
+                      English
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDescLang('ar')}
+                      style={{ ...styles.langBtn, ...(descLang === 'ar' ? styles.langBtnActive : {}) }}
+                    >
+                      العربية
+                    </button>
+                  </div>
+                </div>
+
+                {/* Tone Selector */}
+                <div style={styles.inputGroup}>
+                  <label style={styles.label}>Vibe / Tone</label>
+                  <div style={styles.toneGrid}>
+                    {(['enthusiastic', 'dramatic', 'funny', 'professional'] as Tone[]).map((t) => (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => setTone(t)}
+                        style={{ ...styles.toneBtn, ...(tone === t ? styles.toneBtnActive : {}) }}
+                      >
+                        {t.charAt(0).toUpperCase() + t.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Generate Button */}
                 <button
-                  type="button"
-                  onClick={() => setDescLang('en')}
-                  style={{ ...styles.langBtn, ...(descLang === 'en' ? styles.langBtnActive : {}) }}
+                  onClick={generateDescription}
+                  disabled={!movieName.trim() || isGenerating}
+                  style={(!movieName.trim() || isGenerating) ? styles.generateBtnDisabled : styles.generateBtn}
                 >
-                  English
+                  <span style={styles.btnText}>
+                    {isGenerating ? (
+                      <>⏳ Creating Magic...</>
+                    ) : (
+                      <>✨ Generate Description</>
+                    )}
+                  </span>
                 </button>
+              </>
+            ) : (
+              <>
+                {/* Image Prompt Input */}
+                <div style={styles.inputGroup}>
+                  <label style={styles.label}>Image Prompt</label>
+                  <textarea
+                    value={imagePrompt}
+                    onChange={(e) => setImagePrompt(e.target.value)}
+                    placeholder="Describe the image you want to generate... (e.g. A futuristic cyberpunk city at night with neon lights)"
+                    style={styles.textarea}
+                    disabled={isGeneratingImage}
+                  />
+                </div>
+
+                {/* Generate Button */}
                 <button
-                  type="button"
-                  onClick={() => setDescLang('ar')}
-                  style={{ ...styles.langBtn, ...(descLang === 'ar' ? styles.langBtnActive : {}) }}
+                  onClick={generateImage}
+                  disabled={!imagePrompt.trim() || isGeneratingImage}
+                  style={(!imagePrompt.trim() || isGeneratingImage) ? styles.generateBtnDisabled : styles.generateBtn}
                 >
-                  العربية
+                  <span style={styles.btnText}>
+                    {isGeneratingImage ? (
+                      <>⏳ Rendering Art...</>
+                    ) : (
+                      <>🎨 Generate Image</>
+                    )}
+                  </span>
                 </button>
-              </div>
-            </div>
-
-            {/* Tone Selector */}
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Vibe / Tone</label>
-              <div style={styles.toneGrid}>
-                {(['enthusiastic', 'dramatic', 'funny', 'professional'] as Tone[]).map((t) => (
-                  <button
-                    key={t}
-                    type="button"
-                    onClick={() => setTone(t)}
-                    style={{ ...styles.toneBtn, ...(tone === t ? styles.toneBtnActive : {}) }}
-                  >
-                    {t.charAt(0).toUpperCase() + t.slice(1)}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Generate Button */}
-            <button
-              onClick={generateDescription}
-              disabled={!movieName.trim() || isGenerating}
-              style={(!movieName.trim() || isGenerating) ? styles.generateBtnDisabled : styles.generateBtn}
-            >
-              <span style={styles.btnText}>
-                {isGenerating ? (
-                  <>⏳ Creating Magic...</>
-                ) : (
-                  <>✨ Generate Description</>
-                )}
-              </span>
-            </button>
+              </>
+            )}
 
             {error && <div style={{ color: '#ef4444', fontSize: '14px', textAlign: 'center', background: 'rgba(239,68,68,0.1)', padding: '10px', borderRadius: '8px' }}>{error}</div>}
           </section>
 
           {/* RIGHT: Result / Live Preview */}
           <section style={styles.resultCard}>
-            {!generatedContent ? (
-              <div style={styles.emptyState}>
-                <div style={styles.emptyIcon}>🍿</div>
-                <h3>Ready to Create?</h3>
-                <p style={{ fontSize: '14px', maxWidth: '250px', lineHeight: '1.5', opacity: 0.7 }}>
-                  Enter a movie name on the left to instantly generate a captivating description.
-                </p>
-              </div>
-            ) : (
-              <div style={styles.resultContent}>
-                <div style={styles.resultHeader}>
-                  <div style={styles.resultTitle}>
-                    Preview
-                    {isGenerating && (
-                      <div style={styles.liveIndicator}>
-                        <span style={{ width: '6px', height: '6px', background: 'currentColor', borderRadius: '50%', display: 'inline-block', animation: 'pulse 1s infinite' }} />
-                        Generating Live...
+            {activeTab === 'bio' ? (
+              !generatedContent ? (
+                <div style={styles.emptyState}>
+                  <div style={styles.emptyIcon}>🍿</div>
+                  <h3>Ready to Create?</h3>
+                  <p style={{ fontSize: '14px', maxWidth: '250px', lineHeight: '1.5', opacity: 0.7 }}>
+                    Enter a movie name on the left to instantly generate a captivating description.
+                  </p>
+                </div>
+              ) : (
+                <div style={styles.resultContent}>
+                  <div style={styles.resultHeader}>
+                    <div style={styles.resultTitle}>
+                      Preview
+                      {isGenerating && (
+                        <div style={styles.liveIndicator}>
+                          <span style={{ width: '6px', height: '6px', background: 'currentColor', borderRadius: '50%', display: 'inline-block', animation: 'pulse 1s infinite' }} />
+                          Generating Live...
+                        </div>
+                      )}
+                    </div>
+                    <div style={{ fontSize: '13px', color: '#a1a1aa' }}>
+                      {generatedContent.hashtags.length > 0 ? `${generatedContent.description.length} chars` : ''}
+                    </div>
+                  </div>
+
+                  <div style={styles.descriptionContainer}>
+                    <div style={styles.descriptionBox} dir="auto">
+                      {generatedContent.description || (
+                        <span style={{ color: '#52525b', fontStyle: 'italic' }}>Waiting for AI...</span>
+                      )}
+                    </div>
+
+                    {generatedContent.hashtags.length > 0 && (
+                      <div style={styles.hashtagSection}>
+                        {generatedContent.hashtags.map((tag, i) => (
+                          <div key={i} style={styles.hashtag}>{tag}</div>
+                        ))}
                       </div>
                     )}
                   </div>
-                  <div style={{ fontSize: '13px', color: '#a1a1aa' }}>
-                    {generatedContent.hashtags.length > 0 ? `${generatedContent.description.length} chars` : ''}
+
+                  <div style={styles.actions}>
+                    <button onClick={copyToClipboard} style={styles.copyBtn}>
+                      {copied ? '✅ Copied!' : '📋 Copy Text'}
+                    </button>
+                    <button onClick={resetForm} style={styles.clearBtn} title="Clear">
+                      🗑️
+                    </button>
                   </div>
                 </div>
-
-                <div style={styles.descriptionContainer}>
-                  <div style={styles.descriptionBox} dir="auto">
-                    {generatedContent.description || (
-                      <span style={{ color: '#52525b', fontStyle: 'italic' }}>Waiting for AI...</span>
-                    )}
+              )
+            ) : (
+              !generatedImage && !isGeneratingImage ? (
+                <div style={styles.emptyState}>
+                  <div style={styles.emptyIcon}>🎨</div>
+                  <h3>Dream It, See It</h3>
+                  <p style={{ fontSize: '14px', maxWidth: '250px', lineHeight: '1.5', opacity: 0.7 }}>
+                    Describe a scene to generate a stunning AI image for your movie bio.
+                  </p>
+                </div>
+              ) : (
+                <div style={styles.resultContent}>
+                  <div style={styles.resultHeader}>
+                    <div style={styles.resultTitle}>
+                      Generated Image
+                      {isGeneratingImage && (
+                        <div style={styles.liveIndicator}>
+                          <span style={{ width: '6px', height: '6px', background: 'currentColor', borderRadius: '50%', display: 'inline-block', animation: 'pulse 1s infinite' }} />
+                          Rendering...
+                        </div>
+                      )}
+                    </div>
                   </div>
 
-                  {generatedContent.hashtags.length > 0 && (
-                    <div style={styles.hashtagSection}>
-                      {generatedContent.hashtags.map((tag, i) => (
-                        <div key={i} style={styles.hashtag}>{tag}</div>
-                      ))}
+                  <div style={styles.descriptionContainer}>
+                    <div style={styles.imageContainer}>
+                      {isGeneratingImage ? (
+                        <div style={{ ...styles.emptyState, opacity: 0.5 }}>
+                          <span style={{ fontSize: '24px', animation: 'pulse 1.5s infinite' }}>⏳</span>
+                          <p>Painting your vision...</p>
+                        </div>
+                      ) : (
+                        generatedImage && (
+                          <img
+                            src={generatedImage.imageUrl}
+                            alt="AI Generated"
+                            style={styles.generatedImage}
+                          />
+                        )
+                      )}
+                    </div>
+                  </div>
+
+                  {generatedImage && !isGeneratingImage && (
+                    <div style={styles.actions}>
+                      <button onClick={downloadImage} style={styles.copyBtn}>
+                        📥 Download Image
+                      </button>
+                      <button onClick={resetForm} style={styles.clearBtn} title="Clear">
+                        🗑️
+                      </button>
                     </div>
                   )}
                 </div>
-
-                <div style={styles.actions}>
-                  <button onClick={copyToClipboard} style={styles.copyBtn}>
-                    {copied ? '✅ Copied!' : '📋 Copy Text'}
-                  </button>
-                  <button onClick={resetForm} style={styles.clearBtn} title="Clear">
-                    🗑️
-                  </button>
-                </div>
-              </div>
+              )
             )}
           </section>
         </main>
@@ -648,7 +865,7 @@ export default function Home() {
               "price": "0",
               "priceCurrency": "USD"
             },
-            "description": "Generate engaging Instagram Reel descriptions, captions, and hashtags for movies using AI. Supports Arabic and English.",
+            "description": "Generate engaging Instagram Reel descriptions and AI images for movies using AI. Supports Arabic and English.",
             "aggregateRating": {
               "@type": "AggregateRating",
               "ratingValue": "4.8",
