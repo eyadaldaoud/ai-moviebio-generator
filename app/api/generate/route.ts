@@ -84,6 +84,10 @@ IMPORTANT FORMATTING:
         // Create a custom stream to parse SSE and pipe just the content
         const stream = new ReadableStream({
             async start(controller) {
+                // Prepend the requested text to the beginning of the stream
+                const prefix = "الفيلم متوفر بالتيليكرام الرابط ببايو الصفحة 🤍\n\n";
+                controller.enqueue(encoder.encode(prefix));
+
                 let buffer = '';
 
                 try {
