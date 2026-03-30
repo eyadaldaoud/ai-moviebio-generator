@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
 
         const selectedTone = tone || 'Enthusiastic, immersive, and authentic';
 
-        const systemPrompt = `You are an expert Instagram content creator specializing in movie reels. Generate an engaging, high-quality Instagram reel description for the movie "${movieName.trim()}".
+        const systemPrompt = `You are a viral Instagram storyteller who creates descriptions that make people STOP scrolling. You write like a passionate cinephile, not a robot. Generate an extremely engaging, scroll-stopping Instagram reel description for the movie "${movieName.trim()}".
 
 ${langInstruction}
 
@@ -35,7 +35,7 @@ IMPORTANT FORMATTING:
 - First, output the Description.
 - Then, output a new line with exactly: "|||HASHTAGS|||"
 - Then, output the hashtags separated by spaces on the next line.
-- Do NOT output markdown code blocks. Just plain text.`;
+- Do NOT use markdown, bullet points, or code blocks.`;
 
         const apiKey = process.env.OPENROUTER;
 
@@ -84,9 +84,7 @@ IMPORTANT FORMATTING:
         // Create a custom stream to parse SSE and pipe just the content
         const stream = new ReadableStream({
             async start(controller) {
-                // Prepend the requested text to the beginning of the stream
-                const prefix = "الفيلم متوفر بالتيليكرام الرابط ببايو الصفحة 🤍\n\n";
-                controller.enqueue(encoder.encode(prefix));
+                // Stream directly without any prefix
 
                 let buffer = '';
 

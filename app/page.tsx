@@ -15,144 +15,207 @@ interface GeneratedImage {
   imageUrl: string;
 }
 
+const TONE_CONFIG: Record<string, { emoji: string; label: string }> = {
+  enthusiastic: { emoji: '🔥', label: 'Hype' },
+  dramatic: { emoji: '🎭', label: 'Dramatic' },
+  funny: { emoji: '😂', label: 'Funny' },
+  professional: { emoji: '💼', label: 'Pro' },
+};
+
 // ─── Styles ─────────────────────────────────────────────────
 const styles: Record<string, CSSProperties> = {
   page: {
     minHeight: '100vh',
-    background: '#09090b', // Deep zinc black foundation
+    background: '#06060a',
     fontFamily: "'Inter', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif",
     color: '#fff',
     overflowX: 'hidden',
     position: 'relative',
     display: 'flex',
     justifyContent: 'center',
-    padding: '40px 20px',
+    padding: '32px 16px 60px',
   },
-  bgGradient: {
+  // Animated orbs
+  orbContainer: {
     position: 'fixed',
     top: 0,
     left: 0,
     width: '100%',
     height: '100%',
     zIndex: 0,
-    background: `
-      radial-gradient(circle at 15% 50%, rgba(124, 58, 237, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 50% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 50%)
-    `,
     pointerEvents: 'none',
+    overflow: 'hidden',
+  },
+  orb1: {
+    position: 'absolute',
+    top: '10%',
+    left: '10%',
+    width: '500px',
+    height: '500px',
+    borderRadius: '50%',
+    background: 'radial-gradient(circle, rgba(124, 58, 237, 0.12) 0%, transparent 70%)',
+    filter: 'blur(60px)',
+    animation: 'orb1 20s ease-in-out infinite',
+  },
+  orb2: {
+    position: 'absolute',
+    top: '50%',
+    right: '5%',
+    width: '400px',
+    height: '400px',
+    borderRadius: '50%',
+    background: 'radial-gradient(circle, rgba(236, 72, 153, 0.10) 0%, transparent 70%)',
+    filter: 'blur(60px)',
+    animation: 'orb2 25s ease-in-out infinite',
+  },
+  orb3: {
+    position: 'absolute',
+    bottom: '10%',
+    left: '40%',
+    width: '350px',
+    height: '350px',
+    borderRadius: '50%',
+    background: 'radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%)',
+    filter: 'blur(60px)',
+    animation: 'orb3 22s ease-in-out infinite',
+  },
+  // Noise overlay
+  noiseOverlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    zIndex: 0,
+    pointerEvents: 'none',
+    opacity: 0.03,
+    background: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
   },
   container: {
     width: '100%',
-    maxWidth: '1200px',
+    maxWidth: '1180px',
     position: 'relative',
     zIndex: 1,
     display: 'flex',
     flexDirection: 'column',
-    gap: '40px',
+    gap: '32px',
   },
+  // Header
   header: {
     textAlign: 'center',
-    marginBottom: '20px',
     animation: 'fadeIn 0.8s ease-out',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '16px',
   },
-  logo: {
+  badge: {
     display: 'inline-flex',
     alignItems: 'center',
-    gap: '12px',
-    marginBottom: '16px',
-    padding: '8px 16px',
-    background: 'rgba(255, 255, 255, 0.03)',
+    gap: '8px',
+    padding: '6px 14px',
+    background: 'rgba(124, 58, 237, 0.08)',
     borderRadius: '9999px',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
-  },
-  logoIcon: {
-    fontSize: '24px',
-  },
-  logoText: {
-    fontSize: '14px',
+    border: '1px solid rgba(124, 58, 237, 0.15)',
+    fontSize: '13px',
     fontWeight: 600,
-    color: '#e4e4e7',
-    letterSpacing: '0.5px',
-    textTransform: 'uppercase',
+    color: '#c4b5fd',
+    letterSpacing: '0.3px',
   },
   title: {
-    fontSize: 'clamp(2.5rem, 5vw, 4rem)',
+    fontSize: 'clamp(2.2rem, 5vw, 3.5rem)',
     fontWeight: 800,
-    letterSpacing: '-0.02em',
-    background: 'linear-gradient(135deg, #fff 0%, #a1a1aa 100%)',
+    letterSpacing: '-0.03em',
+    background: 'linear-gradient(135deg, #ffffff 0%, #c4b5fd 50%, #f0abfc 100%)',
+    backgroundSize: '200% 200%',
+    animation: 'gradientShift 6s ease infinite',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
-    marginBottom: '16px',
-    lineHeight: 1.1,
+    lineHeight: 1.15,
   },
   subtitle: {
-    fontSize: '18px',
-    color: '#a1a1aa',
-    maxWidth: '500px',
-    margin: '0 auto',
-    lineHeight: 1.6,
+    fontSize: '16px',
+    color: '#71717a',
+    maxWidth: '440px',
+    lineHeight: 1.7,
+    fontWeight: 400,
   },
   // Tab Navigation
-  tabsContainer: {
+  tabsWrapper: {
     display: 'flex',
     justifyContent: 'center',
-    gap: '12px',
-    marginBottom: '10px',
+  },
+  tabsContainer: {
+    display: 'inline-flex',
+    gap: '4px',
+    padding: '4px',
+    borderRadius: '14px',
+    background: 'rgba(24, 24, 27, 0.6)',
+    border: '1px solid rgba(255, 255, 255, 0.06)',
+    backdropFilter: 'blur(12px)',
   },
   tabBtn: {
-    padding: '12px 24px',
-    borderRadius: '12px',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
-    background: 'rgba(24, 24, 27, 0.4)',
+    padding: '10px 22px',
+    borderRadius: '10px',
+    border: 'none',
+    background: 'transparent',
     color: '#71717a',
-    fontSize: '15px',
+    fontSize: '14px',
     fontWeight: 600,
     cursor: 'pointer',
-    transition: 'all 0.3s ease',
+    transition: 'all 0.25s ease',
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
   },
   tabBtnActive: {
-    background: 'rgba(124, 58, 237, 0.1)',
-    border: '1px solid rgba(124, 58, 237, 0.3)',
-    color: '#fff',
-    boxShadow: '0 0 20px rgba(124, 58, 237, 0.1)',
+    background: 'rgba(124, 58, 237, 0.15)',
+    color: '#e9d5ff',
+    boxShadow: '0 0 16px rgba(124, 58, 237, 0.12)',
   },
   mainGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
-    gap: '32px',
+    gridTemplateColumns: '1fr 1.2fr',
+    gap: '28px',
     alignItems: 'start',
   },
   // Form Section
   formCard: {
-    background: 'rgba(24, 24, 27, 0.6)',
+    background: 'linear-gradient(180deg, rgba(20, 20, 24, 0.8) 0%, rgba(14, 14, 18, 0.9) 100%)',
     backdropFilter: 'blur(24px)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
-    borderRadius: '24px',
-    padding: '32px',
+    border: '1px solid rgba(255, 255, 255, 0.06)',
+    borderRadius: '20px',
+    padding: '28px',
     display: 'flex',
     flexDirection: 'column',
-    gap: '24px',
-    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-    transition: 'all 0.3s ease',
+    gap: '22px',
+    boxShadow: '0 20px 50px -15px rgba(0, 0, 0, 0.6)',
+  },
+  sectionLabel: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    fontSize: '11px',
+    fontWeight: 700,
+    color: '#52525b',
+    textTransform: 'uppercase',
+    letterSpacing: '1.5px',
+    marginBottom: '-6px',
   },
   inputGroup: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '10px',
+    gap: '8px',
   },
   label: {
-    fontSize: '13px',
+    fontSize: '12px',
     fontWeight: 600,
     color: '#a1a1aa',
     textTransform: 'uppercase',
-    letterSpacing: '1px',
+    letterSpacing: '0.8px',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    gap: '6px',
   },
   inputWrapper: {
     position: 'relative',
@@ -162,60 +225,74 @@ const styles: Record<string, CSSProperties> = {
     left: '16px',
     top: '50%',
     transform: 'translateY(-50%)',
-    fontSize: '20px',
+    fontSize: '18px',
     pointerEvents: 'none',
-    opacity: 0.5,
+    opacity: 0.4,
   },
   input: {
     width: '100%',
-    padding: '16px 16px 16px 50px',
-    borderRadius: '16px',
-    background: 'rgba(9, 9, 11, 0.5)',
-    border: '2px solid rgba(255, 255, 255, 0.05)',
+    padding: '14px 16px 14px 46px',
+    borderRadius: '14px',
+    background: 'rgba(9, 9, 11, 0.6)',
+    border: '2px solid rgba(255, 255, 255, 0.04)',
     color: '#fff',
-    fontSize: '16px',
+    fontSize: '15px',
     fontWeight: 500,
     outline: 'none',
-    transition: 'all 0.2s ease',
+    transition: 'all 0.25s ease',
     fontFamily: 'inherit',
   },
   textarea: {
     width: '100%',
-    padding: '16px',
-    borderRadius: '16px',
-    background: 'rgba(9, 9, 11, 0.5)',
-    border: '2px solid rgba(255, 255, 255, 0.05)',
+    padding: '14px 16px',
+    borderRadius: '14px',
+    background: 'rgba(9, 9, 11, 0.6)',
+    border: '2px solid rgba(255, 255, 255, 0.04)',
     color: '#fff',
-    fontSize: '16px',
+    fontSize: '15px',
     fontWeight: 500,
     outline: 'none',
-    transition: 'all 0.2s ease',
+    transition: 'all 0.25s ease',
     fontFamily: 'inherit',
     minHeight: '120px',
     resize: 'vertical',
   },
+  // Divider
+  divider: {
+    height: '1px',
+    background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)',
+    margin: '2px 0',
+  },
   // Tone Selector
   toneGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))',
+    gridTemplateColumns: 'repeat(4, 1fr)',
     gap: '8px',
   },
   toneBtn: {
-    padding: '12px',
+    padding: '10px 6px',
     borderRadius: '12px',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
-    background: 'rgba(124, 58, 237, 0.05)', // Slight tint base
-    color: '#a1a1aa',
-    fontSize: '14px',
+    border: '1px solid rgba(255, 255, 255, 0.04)',
+    background: 'rgba(9, 9, 11, 0.4)',
+    color: '#71717a',
+    fontSize: '13px',
     fontWeight: 500,
     cursor: 'pointer',
     transition: 'all 0.2s ease',
     textAlign: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '4px',
   },
   toneBtnActive: {
-    background: 'rgba(124, 58, 237, 0.15)',
-    border: '1px solid #7c3aed', // FIXED: Full shorthand
+    background: 'rgba(124, 58, 237, 0.12)',
+    border: '1px solid rgba(124, 58, 237, 0.4)',
     color: '#d8b4fe',
+    boxShadow: '0 0 12px rgba(124, 58, 237, 0.08)',
+  },
+  toneEmoji: {
+    fontSize: '18px',
   },
   // Language Selector
   langGrid: {
@@ -224,12 +301,12 @@ const styles: Record<string, CSSProperties> = {
     gap: '8px',
   },
   langBtn: {
-    padding: '14px',
+    padding: '12px',
     borderRadius: '12px',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
-    background: 'rgba(9, 9, 11, 0.5)',
+    border: '1px solid rgba(255, 255, 255, 0.04)',
+    background: 'rgba(9, 9, 11, 0.4)',
     color: '#71717a',
-    fontSize: '15px',
+    fontSize: '14px',
     fontWeight: 500,
     cursor: 'pointer',
     transition: 'all 0.2s ease',
@@ -239,47 +316,52 @@ const styles: Record<string, CSSProperties> = {
     gap: '8px',
   },
   langBtnActive: {
-    background: '#fff',
-    border: '1px solid #fff', // FIXED: Full shorthand
-    color: '#000',
-    fontWeight: 600,
+    background: 'linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85))',
+    border: '1px solid rgba(255, 255, 255, 0.9)',
+    color: '#09090b',
+    fontWeight: 700,
+    boxShadow: '0 4px 16px rgba(255, 255, 255, 0.1)',
   },
   generateBtn: {
     width: '100%',
-    padding: '20px',
-    borderRadius: '16px',
+    padding: '16px',
+    borderRadius: '14px',
     border: 'none',
-    background: 'linear-gradient(135deg, #7c3aed 0%, #db2777 100%)',
+    background: 'linear-gradient(135deg, #7c3aed 0%, #c026d3 50%, #db2777 100%)',
+    backgroundSize: '200% 200%',
+    animation: 'gradientShift 4s ease infinite',
     color: '#fff',
-    fontSize: '18px',
+    fontSize: '16px',
     fontWeight: 700,
     cursor: 'pointer',
-    transition: 'transform 0.1s ease, box-shadow 0.3s ease',
+    transition: 'all 0.2s ease',
     position: 'relative',
     overflow: 'hidden',
-    marginTop: '16px',
-    boxShadow: '0 10px 30px -10px rgba(219, 39, 119, 0.4)',
-    minHeight: '64px',
+    marginTop: '8px',
+    boxShadow: '0 8px 30px -8px rgba(192, 38, 211, 0.45)',
+    minHeight: '56px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    letterSpacing: '0.3px',
   },
   generateBtnDisabled: {
     width: '100%',
-    padding: '20px',
-    borderRadius: '16px',
-    border: 'none',
-    background: '#27272a',
-    color: 'rgba(255, 255, 255, 0.5)',
-    fontSize: '18px',
+    padding: '16px',
+    borderRadius: '14px',
+    border: '1px solid rgba(255, 255, 255, 0.04)',
+    background: 'rgba(24, 24, 27, 0.5)',
+    color: 'rgba(255, 255, 255, 0.25)',
+    fontSize: '16px',
     fontWeight: 700,
     cursor: 'not-allowed',
-    marginTop: '16px',
+    marginTop: '8px',
     boxShadow: 'none',
-    minHeight: '64px',
+    minHeight: '56px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    letterSpacing: '0.3px',
   },
   btnText: {
     position: 'relative',
@@ -292,17 +374,17 @@ const styles: Record<string, CSSProperties> = {
   },
   // Result Section
   resultCard: {
-    background: 'rgba(24, 24, 27, 0.6)',
+    background: 'linear-gradient(180deg, rgba(20, 20, 24, 0.8) 0%, rgba(14, 14, 18, 0.9) 100%)',
     backdropFilter: 'blur(24px)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
-    borderRadius: '24px',
-    padding: '32px',
+    border: '1px solid rgba(255, 255, 255, 0.06)',
+    borderRadius: '20px',
+    padding: '28px',
     display: 'flex',
     flexDirection: 'column',
     height: '100%',
-    minHeight: '600px',
+    minHeight: '560px',
     position: 'relative',
-    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+    boxShadow: '0 20px 50px -15px rgba(0, 0, 0, 0.6)',
   },
   emptyState: {
     flex: 1,
@@ -310,95 +392,127 @@ const styles: Record<string, CSSProperties> = {
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    color: '#52525b',
+    color: '#3f3f46',
     textAlign: 'center',
     gap: '16px',
+    padding: '40px 20px',
   },
-  emptyIcon: {
-    fontSize: '48px',
-    opacity: 0.2,
+  emptyIconWrap: {
+    width: '80px',
+    height: '80px',
+    borderRadius: '20px',
+    background: 'rgba(124, 58, 237, 0.06)',
+    border: '1px solid rgba(124, 58, 237, 0.1)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '36px',
     marginBottom: '8px',
+    animation: 'float 4s ease-in-out infinite',
+  },
+  emptyTitle: {
+    fontSize: '18px',
+    fontWeight: 700,
+    color: '#52525b',
+    letterSpacing: '-0.01em',
+  },
+  emptyDesc: {
+    fontSize: '14px',
+    maxWidth: '260px',
+    lineHeight: '1.6',
+    color: '#3f3f46',
   },
   resultContent: {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    gap: '24px',
-    animation: 'fadeIn 0.5s ease-out',
+    gap: '20px',
+    animation: 'fadeInScale 0.5s ease-out',
     height: '100%',
   },
   resultHeader: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingBottom: '20px',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-    marginBottom: '10px',
+    paddingBottom: '16px',
+    borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
   },
   resultTitle: {
-    fontSize: '18px',
-    fontWeight: 600,
-    color: '#e4e4e7',
+    fontSize: '15px',
+    fontWeight: 700,
+    color: '#a1a1aa',
     display: 'flex',
     alignItems: 'center',
     gap: '10px',
+    textTransform: 'uppercase',
+    letterSpacing: '0.8px',
   },
   liveIndicator: {
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
-    fontSize: '13px',
-    color: '#10b981',
+    gap: '6px',
+    fontSize: '12px',
+    color: '#34d399',
     fontWeight: 600,
-    background: 'rgba(16, 185, 129, 0.1)',
-    padding: '6px 12px',
+    background: 'rgba(16, 185, 129, 0.08)',
+    padding: '5px 12px',
     borderRadius: '9999px',
-    border: '1px solid rgba(16, 185, 129, 0.2)',
+    border: '1px solid rgba(16, 185, 129, 0.15)',
+    textTransform: 'none',
+    letterSpacing: '0',
+  },
+  charBadge: {
+    fontSize: '12px',
+    color: '#52525b',
+    fontWeight: 500,
+    padding: '4px 10px',
+    background: 'rgba(255,255,255,0.03)',
+    borderRadius: '8px',
+    border: '1px solid rgba(255,255,255,0.04)',
   },
   descriptionContainer: {
     flex: '1 1 auto',
     display: 'flex',
     flexDirection: 'column',
-    gap: '20px',
+    gap: '16px',
     minHeight: '200px',
   },
   descriptionBox: {
-    background: 'linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
-    borderRadius: '16px',
-    padding: '28px',
-    fontSize: '17px',
-    lineHeight: '1.8',
-    color: '#e4e4e7',
+    background: 'rgba(9, 9, 11, 0.5)',
+    borderRadius: '14px',
+    padding: '24px',
+    fontSize: '15px',
+    lineHeight: '1.85',
+    color: '#d4d4d8',
     whiteSpace: 'pre-wrap',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
-    boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)',
+    border: '1px solid rgba(255, 255, 255, 0.04)',
     overflowY: 'auto',
-    maxHeight: '400px',
+    maxHeight: '380px',
+    fontWeight: 400,
   },
   hashtagSection: {
     display: 'flex',
     flexWrap: 'wrap',
-    gap: '10px',
-    marginTop: '10px',
+    gap: '8px',
   },
   hashtag: {
-    padding: '10px 16px',
+    padding: '8px 14px',
     borderRadius: '99px',
-    fontSize: '14px',
-    fontWeight: 500,
+    fontSize: '13px',
+    fontWeight: 600,
     color: '#c084fc',
-    background: 'rgba(192, 132, 252, 0.1)',
-    border: '1px solid rgba(192, 132, 252, 0.2)',
-    transition: 'all 0.2s',
+    background: 'rgba(192, 132, 252, 0.08)',
+    border: '1px solid rgba(192, 132, 252, 0.15)',
+    transition: 'all 0.25s ease',
     cursor: 'pointer',
-    boxShadow: '0 2px 8px rgba(192, 132, 252, 0.05)',
+    letterSpacing: '0.2px',
   },
   imageContainer: {
     width: '100%',
-    borderRadius: '16px',
+    borderRadius: '14px',
     overflow: 'hidden',
     border: '1px solid rgba(255, 255, 255, 0.05)',
-    background: 'rgba(0,0,0,0.2)',
+    background: 'rgba(0,0,0,0.3)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -410,41 +524,64 @@ const styles: Record<string, CSSProperties> = {
     objectFit: 'cover',
   },
   actions: {
-    display: 'grid',
-    gridTemplateColumns: 'minmax(200px, 1fr) auto',
-    gap: '16px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px',
     marginTop: 'auto',
-    paddingTop: '20px',
-    borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+    paddingTop: '16px',
+    borderTop: '1px solid rgba(255, 255, 255, 0.04)',
   },
-  copyBtn: {
-    padding: '18px',
-    borderRadius: '16px',
+  actionsRow: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr 1fr auto',
+    gap: '8px',
+  },
+  copyBtnPrimary: {
+    padding: '12px 10px',
+    borderRadius: '12px',
     border: 'none',
-    background: '#fff',
-    color: '#000',
-    fontSize: '16px',
+    background: 'linear-gradient(135deg, #fff 0%, #e4e4e7 100%)',
+    color: '#09090b',
+    fontSize: '13px',
     fontWeight: 700,
     cursor: 'pointer',
-    transition: 'all 0.2s',
+    transition: 'all 0.2s ease',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: '10px',
-    boxShadow: '0 4px 12px rgba(255, 255, 255, 0.1)',
+    gap: '6px',
+    boxShadow: '0 4px 12px rgba(255, 255, 255, 0.08)',
+    letterSpacing: '0.2px',
+  },
+  copyBtnSecondary: {
+    padding: '12px 10px',
+    borderRadius: '12px',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    background: 'rgba(255, 255, 255, 0.04)',
+    color: '#a1a1aa',
+    fontSize: '13px',
+    fontWeight: 600,
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '6px',
+    letterSpacing: '0.2px',
   },
   clearBtn: {
-    padding: '18px',
-    borderRadius: '16px',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-    background: 'transparent',
-    color: '#a1a1aa',
+    padding: '12px',
+    borderRadius: '12px',
+    border: '1px solid rgba(255, 255, 255, 0.06)',
+    background: 'rgba(9, 9, 11, 0.4)',
+    color: '#71717a',
     cursor: 'pointer',
-    transition: 'all 0.2s',
+    transition: 'all 0.25s ease',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '56px',
+    width: '44px',
+    fontSize: '15px',
   },
 };
 
@@ -461,10 +598,18 @@ export default function Home() {
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
 
   const [isGenerating, setIsGenerating] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState<'all' | 'text' | 'hashtags' | null>(null);
   const [error, setError] = useState('');
 
   const abortControllerRef = useRef<AbortController | null>(null);
+  const descBoxRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll the description box while generating
+  useEffect(() => {
+    if (isGenerating && descBoxRef.current) {
+      descBoxRef.current.scrollTop = descBoxRef.current.scrollHeight;
+    }
+  }, [generatedContent?.description, isGenerating]);
 
   const generateDescription = async () => {
     if (!movieName.trim()) return;
@@ -565,12 +710,19 @@ export default function Home() {
     }
   };
 
-  const copyToClipboard = () => {
+  const copyToClipboard = (mode: 'all' | 'text' | 'hashtags') => {
     if (!generatedContent) return;
-    const fullText = `${generatedContent.description}\n\n${generatedContent.hashtags.join(' ')}`;
-    navigator.clipboard.writeText(fullText);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    let textToCopy = '';
+    if (mode === 'all') {
+      textToCopy = `${generatedContent.description}\n\n${generatedContent.hashtags.join(' ')}`;
+    } else if (mode === 'text') {
+      textToCopy = generatedContent.description;
+    } else {
+      textToCopy = generatedContent.hashtags.join(' ');
+    }
+    navigator.clipboard.writeText(textToCopy);
+    setCopied(mode);
+    setTimeout(() => setCopied(null), 2000);
   };
 
   const downloadImage = async () => {
@@ -586,103 +738,128 @@ export default function Home() {
     setGeneratedContent(null);
     setImagePrompt('');
     setGeneratedImage(null);
-    setCopied(false);
+    setCopied(null);
     setError('');
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
   };
 
+  const isGenDisabled = !movieName.trim() || isGenerating;
+  const isImgDisabled = !imagePrompt.trim() || isGeneratingImage;
+
   return (
     <div style={styles.page}>
-      <div style={styles.bgGradient} />
+      {/* Animated Orbs Background */}
+      <div style={styles.orbContainer}>
+        <div style={styles.orb1} />
+        <div style={styles.orb2} />
+        <div style={styles.orb3} />
+      </div>
+      <div style={styles.noiseOverlay} />
 
       <div style={styles.container}>
         {/* Header */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', marginBottom: '20px' }}>
-          <header style={styles.header}>
-            <div style={styles.logo}>
-              <span style={styles.logoIcon}>✨</span>
-              <span style={styles.logoText}>Bio Generator</span>
-            </div>
-            <h1 style={styles.title}>Movie Reel Magic</h1>
-            <p style={styles.subtitle}>
-              Create viral-worthy captions and stunning AI visuals for your favorite films.
-            </p>
-          </header>
-        </div>
+        <header style={styles.header}>
+          <div style={styles.badge}>
+            <span>✨</span>
+            <span>AI-Powered</span>
+          </div>
+          <h1 style={styles.title}>Movie Reel Magic</h1>
+          <p style={styles.subtitle}>
+            Generate scroll-stopping captions and stunning visuals for your movie reels — in seconds.
+          </p>
+        </header>
 
         {/* Tab Switcher */}
-        <div style={styles.tabsContainer}>
-          <button
-            onClick={() => setActiveTab('bio')}
-            style={{ ...styles.tabBtn, ...(activeTab === 'bio' ? styles.tabBtnActive : {}) }}
-          >
-            🎬 Movie Bio
-          </button>
-          <button
-            onClick={() => setActiveTab('image')}
-            style={{ ...styles.tabBtn, ...(activeTab === 'image' ? styles.tabBtnActive : {}) }}
-          >
-            🖼️ Image Gen
-          </button>
+        <div style={styles.tabsWrapper}>
+          <div style={styles.tabsContainer}>
+            <button
+              className="tab-btn"
+              onClick={() => setActiveTab('bio')}
+              style={{ ...styles.tabBtn, ...(activeTab === 'bio' ? styles.tabBtnActive : {}) }}
+            >
+              🎬 Movie Bio
+            </button>
+            <button
+              className="tab-btn"
+              onClick={() => setActiveTab('image')}
+              style={{ ...styles.tabBtn, ...(activeTab === 'image' ? styles.tabBtnActive : {}) }}
+            >
+              🖼️ Image Gen
+            </button>
+          </div>
         </div>
 
-        <main style={styles.mainGrid}>
+        <main style={styles.mainGrid} className="main-grid-responsive">
           {/* LEFT: Controls */}
-          <section style={styles.formCard}>
+          <section style={styles.formCard} className="card-glow">
             {activeTab === 'bio' ? (
               <>
                 {/* Movie Input */}
                 <div style={styles.inputGroup}>
-                  <label style={styles.label}>Movie Name</label>
+                  <label style={styles.label}>
+                    <span>🎬</span> Movie Name
+                  </label>
                   <div style={styles.inputWrapper}>
-                    <span style={styles.inputIcon}>🎬</span>
+                    <span style={styles.inputIcon}>🔍</span>
                     <input
                       type="text"
                       value={movieName}
                       onChange={(e) => setMovieName(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && generateDescription()}
-                      placeholder="e.g. Interstellar"
+                      placeholder="e.g. Interstellar, Inception..."
                       style={styles.input}
                       disabled={isGenerating}
                     />
                   </div>
                 </div>
 
+                <div style={styles.divider} />
+
                 {/* Language */}
                 <div style={styles.inputGroup}>
-                  <label style={styles.label}>Language</label>
+                  <label style={styles.label}>
+                    <span>🌐</span> Language
+                  </label>
                   <div style={styles.langGrid}>
                     <button
+                      className="lang-btn"
                       type="button"
                       onClick={() => setDescLang('en')}
                       style={{ ...styles.langBtn, ...(descLang === 'en' ? styles.langBtnActive : {}) }}
                     >
-                      English
+                      🇺🇸 English
                     </button>
                     <button
+                      className="lang-btn"
                       type="button"
                       onClick={() => setDescLang('ar')}
                       style={{ ...styles.langBtn, ...(descLang === 'ar' ? styles.langBtnActive : {}) }}
                     >
-                      العربية
+                      🇸🇦 العربية
                     </button>
                   </div>
                 </div>
 
+                <div style={styles.divider} />
+
                 {/* Tone Selector */}
                 <div style={styles.inputGroup}>
-                  <label style={styles.label}>Vibe / Tone</label>
+                  <label style={styles.label}>
+                    <span>🎨</span> Vibe / Tone
+                  </label>
                   <div style={styles.toneGrid}>
-                    {(['enthusiastic', 'dramatic', 'funny', 'professional'] as Tone[]).map((t) => (
+                    {(Object.keys(TONE_CONFIG) as Tone[]).map((t) => (
                       <button
+                        className="tone-btn"
                         key={t}
                         type="button"
                         onClick={() => setTone(t)}
                         style={{ ...styles.toneBtn, ...(tone === t ? styles.toneBtnActive : {}) }}
                       >
-                        {t.charAt(0).toUpperCase() + t.slice(1)}
+                        <span style={styles.toneEmoji}>{TONE_CONFIG[t].emoji}</span>
+                        {TONE_CONFIG[t].label}
                       </button>
                     ))}
                   </div>
@@ -690,13 +867,17 @@ export default function Home() {
 
                 {/* Generate Button */}
                 <button
+                  className={isGenDisabled ? '' : 'generate-btn-active'}
                   onClick={generateDescription}
-                  disabled={!movieName.trim() || isGenerating}
-                  style={(!movieName.trim() || isGenerating) ? styles.generateBtnDisabled : styles.generateBtn}
+                  disabled={isGenDisabled}
+                  style={isGenDisabled ? styles.generateBtnDisabled : styles.generateBtn}
                 >
                   <span style={styles.btnText}>
                     {isGenerating ? (
-                      <>⏳ Creating Magic...</>
+                      <>
+                        <span style={{ animation: 'spin 1s linear infinite', display: 'inline-block' }}>⚡</span>
+                        Generating...
+                      </>
                     ) : (
                       <>✨ Generate Description</>
                     )}
@@ -707,11 +888,13 @@ export default function Home() {
               <>
                 {/* Image Prompt Input */}
                 <div style={styles.inputGroup}>
-                  <label style={styles.label}>Image Prompt</label>
+                  <label style={styles.label}>
+                    <span>🖼️</span> Image Prompt
+                  </label>
                   <textarea
                     value={imagePrompt}
                     onChange={(e) => setImagePrompt(e.target.value)}
-                    placeholder="Describe the image you want to generate... (e.g. A futuristic cyberpunk city at night with neon lights)"
+                    placeholder="Describe the image you want... (e.g. A futuristic cyberpunk city at night with neon lights)"
                     style={styles.textarea}
                     disabled={isGeneratingImage}
                   />
@@ -719,13 +902,17 @@ export default function Home() {
 
                 {/* Generate Button */}
                 <button
+                  className={isImgDisabled ? '' : 'generate-btn-active'}
                   onClick={generateImage}
-                  disabled={!imagePrompt.trim() || isGeneratingImage}
-                  style={(!imagePrompt.trim() || isGeneratingImage) ? styles.generateBtnDisabled : styles.generateBtn}
+                  disabled={isImgDisabled}
+                  style={isImgDisabled ? styles.generateBtnDisabled : styles.generateBtn}
                 >
                   <span style={styles.btnText}>
                     {isGeneratingImage ? (
-                      <>⏳ Rendering Art...</>
+                      <>
+                        <span style={{ animation: 'spin 1s linear infinite', display: 'inline-block' }}>🎨</span>
+                        Rendering...
+                      </>
                     ) : (
                       <>🎨 Generate Image</>
                     )}
@@ -734,69 +921,105 @@ export default function Home() {
               </>
             )}
 
-            {error && <div style={{ color: '#ef4444', fontSize: '14px', textAlign: 'center', background: 'rgba(239,68,68,0.1)', padding: '10px', borderRadius: '8px' }}>{error}</div>}
+            {error && (
+              <div style={{
+                color: '#fca5a5',
+                fontSize: '13px',
+                textAlign: 'center',
+                background: 'rgba(239,68,68,0.08)',
+                padding: '12px',
+                borderRadius: '12px',
+                border: '1px solid rgba(239,68,68,0.15)',
+                fontWeight: 500,
+              }}>
+                {error}
+              </div>
+            )}
           </section>
 
           {/* RIGHT: Result / Live Preview */}
-          <section style={styles.resultCard}>
+          <section style={styles.resultCard} className="card-glow">
             {activeTab === 'bio' ? (
               !generatedContent ? (
                 <div style={styles.emptyState}>
-                  <div style={styles.emptyIcon}>🍿</div>
-                  <h3>Ready to Create?</h3>
-                  <p style={{ fontSize: '14px', maxWidth: '250px', lineHeight: '1.5', opacity: 0.7 }}>
-                    Enter a movie name on the left to instantly generate a captivating description.
+                  <div style={styles.emptyIconWrap}>🍿</div>
+                  <h3 style={styles.emptyTitle}>Ready to Create?</h3>
+                  <p style={styles.emptyDesc}>
+                    Enter a movie name and hit generate to create a scroll-stopping caption instantly.
                   </p>
                 </div>
               ) : (
                 <div style={styles.resultContent}>
                   <div style={styles.resultHeader}>
                     <div style={styles.resultTitle}>
-                      Preview
+                      📄 Preview
                       {isGenerating && (
                         <div style={styles.liveIndicator}>
-                          <span style={{ width: '6px', height: '6px', background: 'currentColor', borderRadius: '50%', display: 'inline-block', animation: 'pulse 1s infinite' }} />
-                          Generating Live...
+                          <span style={{
+                            width: '6px',
+                            height: '6px',
+                            background: '#34d399',
+                            borderRadius: '50%',
+                            display: 'inline-block',
+                            animation: 'pulse 1.2s ease-in-out infinite',
+                            boxShadow: '0 0 6px rgba(52, 211, 153, 0.4)',
+                          }} />
+                          Live
                         </div>
                       )}
                     </div>
-                    <div style={{ fontSize: '13px', color: '#a1a1aa' }}>
-                      {generatedContent.hashtags.length > 0 ? `${generatedContent.description.length} chars` : ''}
-                    </div>
+                    {generatedContent.hashtags.length > 0 && (
+                      <div style={styles.charBadge}>
+                        {generatedContent.description.length} chars
+                      </div>
+                    )}
                   </div>
 
                   <div style={styles.descriptionContainer}>
-                    <div style={styles.descriptionBox} dir="auto">
-                      {generatedContent.description || (
-                        <span style={{ color: '#52525b', fontStyle: 'italic' }}>Waiting for AI...</span>
+                    <div style={styles.descriptionBox} dir="auto" ref={descBoxRef}>
+                      {generatedContent.description ? (
+                        <>
+                          {generatedContent.description}
+                          {isGenerating && <span className="typing-indicator">&nbsp;</span>}
+                        </>
+                      ) : (
+                        <span style={{ color: '#3f3f46', fontStyle: 'italic' }}>Waiting for AI...</span>
                       )}
                     </div>
 
                     {generatedContent.hashtags.length > 0 && (
                       <div style={styles.hashtagSection}>
                         {generatedContent.hashtags.map((tag, i) => (
-                          <div key={i} style={styles.hashtag}>{tag}</div>
+                          <div key={i} style={styles.hashtag} className="hashtag-pill">{tag}</div>
                         ))}
                       </div>
                     )}
                   </div>
 
                   <div style={styles.actions}>
-                    <button onClick={copyToClipboard} style={styles.copyBtn}>
-                      {copied ? '✅ Copied!' : '📋 Copy Text'}
-                    </button>
-                    <button onClick={resetForm} style={styles.clearBtn} title="Clear">
-                      🗑️
-                    </button>
+                    <div style={styles.actionsRow}>
+                      <button onClick={() => copyToClipboard('all')} style={styles.copyBtnPrimary} className="copy-hover">
+                        {copied === 'all' ? '✅ Done' : '📋 Copy All'}
+                      </button>
+                      <button onClick={() => copyToClipboard('text')} style={styles.copyBtnSecondary} className="copy-hover copy-secondary">
+                        {copied === 'text' ? '✅ Done' : '📝 Text'}
+                      </button>
+                      <button onClick={() => copyToClipboard('hashtags')} style={styles.copyBtnSecondary} className="copy-hover copy-secondary">
+                        {copied === 'hashtags' ? '✅ Done' : '#️⃣ Tags'}
+                      </button>
+                      <button onClick={resetForm} style={styles.clearBtn} className="clear-hover" title="Clear">
+                        🗑️
+                      </button>
+                    </div>
                   </div>
                 </div>
               )
             ) : (
               !generatedImage && !isGeneratingImage ? (
                 <div style={styles.emptyState}>
-                  <div style={styles.emptyIcon}>🎨</div>
-                  <h3>Dream It, See It</h3>
-                  <p style={{ fontSize: '14px', maxWidth: '250px', lineHeight: '1.5', opacity: 0.7 }}>
+                  <div style={styles.emptyIconWrap}>🎨</div>
+                  <h3 style={styles.emptyTitle}>Dream It, See It</h3>
+                  <p style={styles.emptyDesc}>
                     Describe a scene to generate a stunning AI image for your movie bio.
                   </p>
                 </div>
@@ -804,10 +1027,18 @@ export default function Home() {
                 <div style={styles.resultContent}>
                   <div style={styles.resultHeader}>
                     <div style={styles.resultTitle}>
-                      Generated Image
+                      🖼️ Generated Image
                       {isGeneratingImage && (
                         <div style={styles.liveIndicator}>
-                          <span style={{ width: '6px', height: '6px', background: 'currentColor', borderRadius: '50%', display: 'inline-block', animation: 'pulse 1s infinite' }} />
+                          <span style={{
+                            width: '6px',
+                            height: '6px',
+                            background: '#34d399',
+                            borderRadius: '50%',
+                            display: 'inline-block',
+                            animation: 'pulse 1.2s ease-in-out infinite',
+                            boxShadow: '0 0 6px rgba(52, 211, 153, 0.4)',
+                          }} />
                           Rendering...
                         </div>
                       )}
@@ -817,9 +1048,9 @@ export default function Home() {
                   <div style={styles.descriptionContainer}>
                     <div style={styles.imageContainer}>
                       {isGeneratingImage ? (
-                        <div style={{ ...styles.emptyState, opacity: 0.5 }}>
-                          <span style={{ fontSize: '24px', animation: 'pulse 1.5s infinite' }}>⏳</span>
-                          <p>Painting your vision...</p>
+                        <div style={{ ...styles.emptyState, opacity: 0.5, padding: '20px' }}>
+                          <span style={{ fontSize: '28px', animation: 'pulse 1.5s ease-in-out infinite' }}>🎨</span>
+                          <p style={{ color: '#52525b', fontSize: '14px' }}>Painting your vision...</p>
                         </div>
                       ) : (
                         generatedImage && (
@@ -835,10 +1066,10 @@ export default function Home() {
 
                   {generatedImage && !isGeneratingImage && (
                     <div style={styles.actions}>
-                      <button onClick={downloadImage} style={styles.copyBtn}>
+                      <button onClick={downloadImage} style={styles.copyBtn} className="copy-hover">
                         📥 Download Image
                       </button>
-                      <button onClick={resetForm} style={styles.clearBtn} title="Clear">
+                      <button onClick={resetForm} style={styles.clearBtn} className="clear-hover" title="Clear">
                         🗑️
                       </button>
                     </div>
@@ -874,11 +1105,6 @@ export default function Home() {
           })
         }}
       />
-
-      <style jsx global>{`
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-      `}</style>
     </div>
   );
 }

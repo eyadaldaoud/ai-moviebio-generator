@@ -6,60 +6,201 @@
   box-sizing: border-box;
 }
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
+/* Smooth scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(124, 58, 237, 0.3);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(124, 58, 237, 0.5);
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
+/* ── Animations ─────────────────────────────────── */
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.95) translateY(12px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 @keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
+  from { opacity: 0; transform: translateX(-30px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
 
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 
 @keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
 
-  100% {
-    background-position: 1000px 0;
-  }
+@keyframes pulse {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33%      { transform: translateY(-12px) rotate(1deg); }
+  66%      { transform: translateY(6px) rotate(-1deg); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0; }
 }
 
 @keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
 
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
+@keyframes orb1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25%      { transform: translate(80px, -60px) scale(1.1); }
+  50%      { transform: translate(-40px, -120px) scale(0.9); }
+  75%      { transform: translate(-80px, 40px) scale(1.05); }
+}
 
-  50% {
-    opacity: 0.8;
-    transform: scale(1.1);
+@keyframes orb2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25%      { transform: translate(-70px, 80px) scale(0.95); }
+  50%      { transform: translate(60px, 40px) scale(1.1); }
+  75%      { transform: translate(30px, -90px) scale(1); }
+}
+
+@keyframes orb3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25%      { transform: translate(50px, 70px) scale(1.05); }
+  50%      { transform: translate(-80px, 20px) scale(0.95); }
+  75%      { transform: translate(40px, -50px) scale(1.1); }
+}
+
+@keyframes btnShimmer {
+  0%   { left: -100%; }
+  100% { left: 200%; }
+}
+
+@keyframes typingCursor {
+  0%, 100% { border-right-color: rgba(124, 58, 237, 0.8); }
+  50%      { border-right-color: transparent; }
+}
+
+/* ── Utility: Focus-visible ring ──────────────── */
+input:focus-visible,
+textarea:focus-visible {
+  border-color: rgba(124, 58, 237, 0.5) !important;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15), 0 0 20px rgba(124, 58, 237, 0.08) !important;
+}
+
+/* ── Generate button hover shimmer ────────────── */
+.generate-btn-active::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  animation: btnShimmer 2.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.generate-btn-active:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 40px -10px rgba(219, 39, 119, 0.5), 0 0 20px rgba(124, 58, 237, 0.2);
+}
+
+.generate-btn-active:active {
+  transform: translateY(0px) scale(0.98);
+}
+
+/* ── Card hover glow ──────────────────────────── */
+.card-glow {
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+.card-glow:hover {
+  border-color: rgba(124, 58, 237, 0.15);
+  box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.6), 0 0 40px rgba(124, 58, 237, 0.05);
+}
+
+/* ── Tone button hover ────────────────────────── */
+.tone-btn:hover {
+  background: rgba(124, 58, 237, 0.12) !important;
+  border-color: rgba(124, 58, 237, 0.3) !important;
+  color: #c4b5fd !important;
+  transform: translateY(-1px);
+}
+
+/* ── Lang button hover ────────────────────────── */
+.lang-btn:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #e4e4e7 !important;
+}
+
+/* ── Copy button hover ────────────────────────── */
+.copy-hover:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.1);
+}
+.copy-secondary:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  color: #e4e4e7 !important;
+}
+.copy-hover:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* ── Clear button hover ───────────────────────── */
+.clear-hover:hover {
+  background: rgba(239, 68, 68, 0.08) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+  color: #f87171 !important;
+}
+
+/* ── Hashtag hover ────────────────────────────── */
+.hashtag-pill:hover {
+  background: rgba(192, 132, 252, 0.18) !important;
+  border-color: rgba(192, 132, 252, 0.4) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(192, 132, 252, 0.15) !important;
+}
+
+/* ── Tab button hover ─────────────────────────── */
+.tab-btn:hover {
+  background: rgba(124, 58, 237, 0.06);
+  color: #a1a1aa;
+}
+
+/* ── Typing animation ─────────────────────────── */
+.typing-indicator {
+  display: inline-block;
+  border-right: 2px solid rgba(124, 58, 237, 0.8);
+  animation: typingCursor 0.8s steps(1) infinite;
+  padding-right: 2px;
+}
+
+/* ── Responsive ───────────────────────────────── */
+@media (max-width: 768px) {
+  .main-grid-responsive {
+    grid-template-columns: 1fr !important;
   }
 }
