@@ -15,15 +15,42 @@ export async function POST(request: NextRequest) {
             ? 'Write the description ENTIRELY in Arabic. Use Arabic hashtags where appropriate, but keep the movie title hashtag in English/transliterated form.'
             : 'Write the description ENTIRELY in English.';
 
+        const metadataLabels = language === 'ar'
+            ? { name: 'الاسم', rating: 'التقييم', type: 'النوع', genre: 'التصنيف', year: 'سنة الإصدار', movie: 'فيلم', tvShow: 'مسلسل' }
+            : { name: 'Name', rating: 'Rating', type: 'Type', genre: 'Genre', year: 'Year', movie: 'Movie', tvShow: 'TV Show' };
+
         const selectedTone = tone || 'Enthusiastic, immersive, and authentic';
 
-        const systemPrompt = `You are a viral Instagram storyteller who creates descriptions that make people STOP scrolling. You write like a passionate cinephile, not a robot. Generate an extremely engaging, scroll-stopping Instagram reel description for the movie "${movieName.trim()}".
+        const systemPrompt = `You are a viral Instagram storyteller who creates descriptions that make people STOP scrolling. You write like a passionate cinephile, not a robot. Generate an extremely engaging, scroll-stopping Instagram reel description for the movie/show "${movieName.trim()}".
 
 ${langInstruction}
 
 Requirements:
-1. DESCRIPTION: Write a detailed, engaging caption (approx. 2 paragraphs) that:
-   - Starts with the Movie Title (Year) 🍿 on the first line.
+1. DESCRIPTION: Write a detailed, engaging caption that MUST start with these 5 info lines at the top, each on its own line, using the EXACT format below:
+
+🎥 ${metadataLabels.name} : (the full title of the movie/show)
+⭐ ${metadataLabels.rating} : X/10
+🎬 ${metadataLabels.type} : ${metadataLabels.movie} or ${metadataLabels.tvShow}
+🎭 ${metadataLabels.genre} : (the genre(s), e.g. Drama, Action, Thriller)
+📅 ${metadataLabels.year} : (the year of release)
+
+Example (English):
+🎥 Name : Interstellar
+⭐ Rating : 8.7/10
+🎬 Type : Movie
+🎭 Genre : Sci-Fi, Adventure
+📅 Year : 2014
+
+Example (Arabic):
+🎥 الاسم : إنترستيلر
+⭐ التقييم : 8.7/10
+🎬 النوع : فيلم
+🎭 التصنيف : خيال علمي، مغامرة
+📅 سنة الإصدار : 2014
+
+You MUST use the correct IMDb rating (or closest known rating out of 10), the accurate type, genre(s), and year of release. Do NOT guess — use real data.
+
+After these 4 info lines, leave a blank line, then write the caption (approx. 2 paragraphs):
    - First paragraph: Set the scene and the hook. Describe the plot premise in an exciting way without major spoilers. Use dramatic, storytelling language.
    - Second paragraph: Focus on the atmosphere, tension, or emotional impact. Why is this a must-watch? Use phrases that build hype (e.g., "Every scene builds tension...", "A masterpiece of...").
    - Use emojis GENEROUSLY (at least 2-3 per sentence) within the text to break up lines and add visual flavor. Use relevant movie, emotion, and aesthetic emojis.
@@ -32,7 +59,7 @@ Requirements:
 2. HASHTAGS: Provide exactly 4 hashtags. Two hashtags must be #fyp and #اكسبلور. The other two hashtags must be highly relevant to the movie type/genre and context.
 
 IMPORTANT FORMATTING:
-- First, output the Description.
+- First, output the 4 info lines, then a blank line, then the description paragraphs.
 - Then, output a new line with exactly: "|||HASHTAGS|||"
 - Then, output the hashtags separated by spaces on the next line.
 - Do NOT use markdown, bullet points, or code blocks.`;
