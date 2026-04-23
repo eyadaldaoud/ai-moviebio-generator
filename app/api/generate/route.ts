@@ -83,7 +83,7 @@ IMPORTANT FORMATTING:
                 "X-Title": "Movie Reel Description Generator",
             },
             body: JSON.stringify({
-                model: "arcee-ai/trinity-large-preview:free",
+                model: "tencent/hy3-preview:free",
                 messages: [
                     {
                         "role": "user",
